@@ -12,14 +12,12 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("/api/submit");
+      const res = await fetch("/api/get-data-format");
       const json = await res.json();
       setData(json.data || []);
     };
     fetchData();
   }, []);
-  console.log({data});
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -145,10 +143,25 @@ export default function Home() {
               {data.length > 1 &&
                 data.slice(1).map((row, idx) => (
                   <tr key={idx}>
-                    <td>{row[0]}</td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
-                    <td>{row[3]}</td>
+                    {row.map((cell, i) => {
+                      const isImage =
+                        typeof cell.value === "string" &&
+                        cell.value.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+
+                      return (
+                        <td key={i} style={cell.style}>
+                          {isImage ? (
+                            <img
+                              src={cell.value}
+                              alt="img"
+                              style={{ maxWidth: "100px" }}
+                            />
+                          ) : (
+                            cell.value
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))}
             </tbody>
